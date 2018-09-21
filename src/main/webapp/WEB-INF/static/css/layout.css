@@ -1,0 +1,42 @@
+@charset "UTF-8";
+
+#wrapper {
+	width: 900px;
+}
+
+#no-articles {
+	padding: 15px;
+}
+
+.padded {
+	padding: 15px;
+}
+
+#wrapper>#headerWrapper>div, #wrapper>.contentWrapper>div {
+	padding: 15px;
+}
+
+.header {
+	font-weight: bold;
+	text-align: center;
+}
+
+.number {
+	width: 55px;
+}
+
+.subject {
+	width: 385px;
+}
+
+.writer {
+	width: 170px;
+}
+
+.create-date {
+	width: 170px
+}
+
+.box {
+	display: inline-block;
+}

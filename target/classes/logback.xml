@@ -1,0 +1,63 @@
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    	<encoder>
+      		<pattern>▶ %d{HH:mm:ss.SSS} %-5level %logger{0}.%method:%line - %msg%n</pattern>
+    	</encoder>
+  	</appender>
+  	
+  	<appender name="STDOUT_File" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  		<file>C:/JAVA_KTds/logs/stdout.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>C:/JAVA_KTds/logs/stdout.%d{yyyy-MM-dd}.log</fileNamePattern>
+		</rollingPolicy>
+    	<encoder>
+      		<pattern>▶ %d{HH:mm:ss.SSS} %-5level %logger{0}.%method:%line - %msg%n</pattern>
+    	</encoder>
+  	</appender>
+  
+	<appender name="statistics"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>C:/JAVA_KTds/logs/statistics.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>C:/JAVA_KTds/logs/statistics.%d{yyyy-MM-dd}.log</fileNamePattern>
+		</rollingPolicy>
+   	 	<encoder>
+   	   		<pattern>Statistics : DateTime : %d{HH:mm:ss.SSS}, %msg%n</pattern>
+   	 	</encoder>
+ 	</appender>
+ 	
+ 	<appender name="param"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>C:/JAVA_KTds/logs/param.log</file>
+			<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<!-- daily rollover -->
+				<fileNamePattern>C:/JAVA_KTds/logs/param.%d{yyyy-MM-dd}.log</fileNamePattern>
+			</rollingPolicy>
+   	 	<encoder>
+   	  	 	<pattern>Param : %d{HH:mm:ss.SSS} %logger.%method:%line %msg%n</pattern>
+   	 	</encoder>
+ 	</appender>
+
+	<logger level="info" name="list.statistics">
+		<appender-ref ref="statistics" />
+	</logger>
+	
+	<logger level="debug" name="com.ktds">
+		<appender-ref ref="param" />
+	</logger>
+
+<!-- 	<logger level="debug" name="org.springframework">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="STDOUT_File" />
+	</logger> -->
+
+  	<root level="debug">
+    	<appender-ref ref="STDOUT" />
+		<appender-ref ref="STDOUT_File" />
+  	</root>
+	</configuration>

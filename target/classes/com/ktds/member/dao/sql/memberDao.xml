@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberDao">
+	
+	<insert id="insertMember" parameterType="MemberVO">
+		INSERT INTO MEMBERS (
+  								EMAIL
+  								, NAME
+  								, PASSWORD
+  								, POINT
+  								, SALT
+   						  ) 
+		VALUES ( 			
+  					#{email}
+  					, #{name}
+  					, #{password}
+  					, 0
+  					, #{salt}
+		)
+	</insert>
+	
+	<select id="selectOneMember" parameterType="MemberVO" resultType="MemberVO">
+		SELECT	EMAIL
+  				, NAME
+  				, PASSWORD
+  				, POINT
+  				, LATEST_LOGIN LATESTLOGIN
+  				, LOGIN_FAIL_COUNT LOGINFAILCOUNT
+  				, IS_ADMIN ISADMIN
+		FROM	MEMBERS
+		WHERE	EMAIL = #{email}
+		AND		PASSWORD = #{password}
+	</select>
+	
+	<update id="updatePoint" parameterType="map">
+		UPDATE 	MEMBERS
+		SET		POINT = POINT + #{point}
+		WHERE 	EMAIL = #{email}
+	</update>
+	
+	<update id="updateLoginFailCount" parameterType="map">
+		UPDATE	MEMBERS
+		SET		LOGIN_FAIL_COUNT = #{loginFailCount}
+				, LATEST_LOGIN = SYSDATE
+		WHERE	EMAIL = #{email}	
+	</update>
+	
+	<select id="selectOneMemberByEmail" parameterType="string" resultType="MemberVO">
+		SELECT	EMAIL
+  				, NAME
+  				, POINT
+  				, LATEST_LOGIN LATESTLOGIN
+  				, LOGIN_FAIL_COUNT LOGINFAILCOUNT
+  				, IS_ADMIN ISADMIN
+		FROM	MEMBERS
+		WHERE	EMAIL = #{email}
+	</select>
+	
+	<select id="isBlockUser" parameterType="string" resultType="_boolean">
+		SELECT	COUNT(1)
+		FROM	MEMBERS
+		WHERE	EMAIL = #{email}
+		AND		LOGIN_FAIL_COUNT >= 3
+		AND		LATEST_LOGIN + 1/24 >= SYSDATE
+	</select>
+	
+	<select id="selectSaltByEmail" parameterType="string" resultType="string">
+		SELECT	SALT
+		FROM	MEMBERS
+		WHERE	EMAIL = #{email}
+	</select>
+	
+	<select id="selectLoginFailCountByEmail" parameterType="string" resultType="_int">
+		SELECT	LOGIN_FAIL_COUNT LOGINFAILCOUNT
+		FROM	MEMBERS
+		WHERE	EMAIL = #{email}
+	</select>
+	
+</mapper>

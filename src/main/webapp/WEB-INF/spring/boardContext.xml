@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- BoardDaoImpl이 사용할 Query 작성 -->
+	<bean	id="boardQueries"
+			class="java.util.ArrayList">
+		<constructor-arg name="c">
+			<list>
+				<!-- 0번 인덱스 -->
+				<value>
+					INSERT INTO BOARD (
+  										ID
+  										, SUBJECT
+  										, CONTENT
+  										, EMAIL
+  										, CRT_DT
+  										, MDFY_DT
+  										, FILE_NAME
+  										, ORIGIN_FILE_NAME
+   									  ) 
+					VALUES ( 			
+										BOARD_ID_SEQ.NEXTVAL, 
+  										?, 
+  										?, 
+   										?, 
+   										SYSDATE, 
+   										SYSDATE, 
+   										?, 
+   										?
+					)
+				</value>
+				<value>
+					SELECT	B.ID
+  							, B.SUBJECT
+  							, B.CONTENT
+  							, B.EMAIL B_EMAIL
+  							, B.CRT_DT
+  							, B.MDFY_DT
+  							, B.FILE_NAME
+  							, B.ORIGIN_FILE_NAME 
+  							, M.EMAIL M_EMAIL
+  							, M.NAME
+  							, M.POINT
+					FROM	BOARD B
+							, MEMBERS M
+					WHERE	B.EMAIL = M.EMAIL
+					AND		ID = ?
+				</value>
+				<value>
+					DELETE	BOARD
+					WHERE	ID = ?
+				</value>
+				<value>
+					SELECT	B.ID
+  							, B.SUBJECT
+  							, B.CONTENT
+  							, B.EMAIL B_EMAIL
+  							, B.CRT_DT
+  							, B.MDFY_DT
+  							, B.FILE_NAME
+  							, B.ORIGIN_FILE_NAME 
+  							, M.EMAIL M_EMAIL
+  							, M.NAME
+  							, M.POINT
+					FROM	BOARD B
+							, MEMBERS M
+					WHERE	B.EMAIL = M.EMAIL
+					ORDER	BY ID DESC
+				</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
+</beans>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReplyDao">
+			
+	<resultMap type="ReplyVO" id="replyResultMap">
+		<id column="REPLY_ID" property="replyId" />
+		<result column="LEVEL" property="level" />
+		<result column="R_BOARD_ID" property="boardId" />
+		<result column="R_EMAIL" property="email" />
+		<result column="REPLY" property="reply" />
+		<result column="R_CRT_DT" property="crtDt" />
+		<result column="PARENT_REPLY_ID" property="parentReplyId" />
+		<association property="boardVO" javaType="BoardVO">
+			<id property="id" column="ID" />
+			<result property="subject" column="SUBJECT" />
+			<result property="email" column="B_EMAIL" />
+			<result property="crtDt" column="B_CRT_DT" />
+			<result property="mdfyDt" column="MDFY_DT" />
+			<result property="fileName" column="FILE_NAME" />
+			<result property="originFileName" column="ORIGIN_FILE_NAME" />
+		</association>
+		<association property="memberVO" javaType="MemberVO">
+			<id property="email" column="R_M_EMAIL" />
+			<result property="name" column="NAME" />
+			<result property="point" column="POINT" />
+		</association>
+	</resultMap>
+	
+	<insert id="insertOneReply" parameterType="ReplyVO">
+		INSERT 	INTO REPLY (
+		   						REPLY_ID
+		   						, BOARD_ID
+		   						, EMAIL
+		   						, REPLY
+		   						, CRT_DT
+		   						, PARENT_REPLY_ID
+		   					) 
+		VALUES	( 
+					'RP-' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24') || '-' || LPAD(REPLY_ID_SEQ.NEXTVAL, 6, '0')
+					, #{boardId}
+					, #{email}
+					, #{reply}
+					, SYSDATE
+					, #{parentReplyId}
+				)
+	</insert>
+
+	<select id="selectAllReplies" parameterType="_int" resultMap="replyResultMap">
+		SELECT	LEVEL
+				, R.REPLY_ID
+				, R.BOARD_ID R_BOARD_ID
+				, R.EMAIL R_EMAIL
+				, R.REPLY
+				, R.CRT_DT R_CRT_DT
+				, R.PARENT_REPLY_ID
+				, B.ID
+  				, B.SUBJECT
+  				, B.EMAIL B_EMAIL
+  				, B.CRT_DT B_CRT_DT
+  				, B.MDFY_DT
+  				, B.FILE_NAME
+  				, B.ORIGIN_FILE_NAME 
+  				, R_M.EMAIL R_M_EMAIL
+  				, R_M.NAME
+  				, R_M.POINT
+		FROM	REPLY R
+				, BOARD B
+				, MEMBERS B_M
+				, MEMBERS R_M
+		WHERE	R.EMAIL = R_M.EMAIL
+		AND		B.EMAIL = B_M.EMAIL
+		AND		R.BOARD_ID = B.ID
+		AND		B.ID = #{boardId}
+		START	WITH R.PARENT_REPLY_ID = '0'
+		CONNECT	BY PRIOR R.REPLY_ID = R.PARENT_REPLY_ID
+	</select>	
+		
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:s="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	
+	<!-- 공통기능 클래스 AOP에 사용됨 -->	
+	<bean	id="daoParamAop"
+			class="com.ktds.common.aop.DaoParamAop">
+	</bean>
+	
+	<aop:config>
+		<aop:aspect id="daoAspect" ref="daoParamAop">
+			<!-- execution( returnType package.class.method(arguments) ) -->
+			<aop:pointcut expression="execution( * com.ktds..dao.*DaoImpl.*(..) )" 
+						  id="daoPointCut"/>
+			<aop:around method="getParam" pointcut-ref="daoPointCut"/>
+		</aop:aspect>
+	</aop:config>
+		
+	<context:component-scan base-package="com.ktds" />
+	<mvc:annotation-driven />
+	
+	<mvc:resources location="/WEB-INF/static/js/" mapping="/js/**" />
+	<mvc:resources location="/WEB-INF/static/css/" mapping="/css/**" />
+	<mvc:resources location="/WEB-INF/static/img/" mapping="/img/**" />
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/board/**"/>
+			<bean	id="sessionInterceptor" 
+					class="com.ktds.common.SessionInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/member/**" />
+			<mvc:exclude-mapping path="/member/logout"/>
+			<bean	id="preventSessionInterceptor"
+					class="com.ktds.common.PreventSessionInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<bean	id="localValidatorBean"
+			class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+	<bean	id="viewResolver"
+			class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".jsp" />		
+	</bean>
+	
+	<bean	id="multipartResolver"
+			class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="104857600" /><!-- 100MB -->
+		<property name="defaultEncoding" value="UTF-8" />		
+	</bean>
+	
+	<!-- 
+		BoardDaoImpl board.dao = new BoardDaoImpl();		
+		
+		BoardServiceImpl board.service = new BoardServiceImpl();
+		boardService.setBoardDao(board.dao);
+	-->
+	 
+	<!-- BoardDaoImpl board.dao = new BoardDaoImpl(); -->
+	<!-- <bean	id="board.dao"
+	 			class="com.ktds.board.dao.BoardDaoImpl"></bean> -->
+	 		
+	<!-- BoardServiceImpl board.service = new BoardServiceImpl(); -->
+	<!-- <bean	id="board.service"
+	 			class="com.ktds.board.service.BoardServiceImpl"> -->
+	 		<!-- boardService.setBoardDao(board.dao); -->
+	<!-- 	 		<property name="boardDao" ref="board.dao" />
+	 	 </bean> -->
+		 		
+	<!-- <bean	id="board.service2"
+	 			class="com.ktds.board.service.BoardServiceImpl2">
+	 		<constructor-arg name="boardDao" ref="board.dao" />		
+	 	 </bean>		 -->
+	
+
+</beans>
